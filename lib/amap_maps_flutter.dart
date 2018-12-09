@@ -1,13 +1,17 @@
-import 'dart:async';
 
+
+
+library amap_maps_flutter;
+
+import 'dart:async';
+import 'dart:ui';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class AmapMapsFlutter {
-  static const MethodChannel _channel =
-      const MethodChannel('amap_maps_flutter');
-
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
-  }
-}
+part 'src/CameraPosition.dart';
+part 'src/LatLng.dart';
+part 'src/AMapController.dart';
+part 'src/AMap.dart';
