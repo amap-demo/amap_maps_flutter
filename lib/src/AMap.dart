@@ -1,17 +1,15 @@
-
-
-
 part of amap_maps_flutter;
 
 
-/**
- * 地图创建完成回调
- */
+///
+/// 地图创建完成回调
+///
 typedef void AMapCreatedCallback(AMapController controller);
 
-class AMap extends StatefulWidget{
 
-  const AMap({this.onMapCreated,this.gestureRecognizers});
+class AMap extends StatefulWidget {
+
+  const AMap({this.onMapCreated, this.gestureRecognizers});
 
   final AMapCreatedCallback onMapCreated;
 
@@ -23,7 +21,7 @@ class AMap extends StatefulWidget{
 }
 
 
-class _AMapState  extends State<AMap> {
+class _AMapState extends State<AMap> {
 
 
   @override
@@ -58,7 +56,7 @@ class _AMapState  extends State<AMap> {
   void onPlatformViewCreated(int id) {
     final AMapController controller = AMapController.init(id);
 
-    if(widget.onMapCreated != null) {
+    if (widget.onMapCreated != null) {
       widget.onMapCreated(controller);
     }
   }

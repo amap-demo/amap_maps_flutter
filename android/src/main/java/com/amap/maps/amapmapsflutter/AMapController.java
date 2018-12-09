@@ -15,8 +15,11 @@ import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.TextureMapView;
 import com.amap.api.maps.model.CameraPosition;
+import com.amap.api.maps.model.Marker;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.flutter.plugin.common.MethodCall;
@@ -30,7 +33,7 @@ import io.flutter.plugin.platform.PlatformView;
  */
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-public class AMapController implements Application.ActivityLifecycleCallbacks, PlatformView, MethodChannel.MethodCallHandler {
+public class AMapController implements Application.ActivityLifecycleCallbacks, PlatformView, MethodChannel.MethodCallHandler, AMap.OnMapLoadedListener, AMap.OnCameraChangeListener, AMap.OnMarkerClickListener {
 
     public static final String CHANNEL = "plugins.flutter.maps.amap.com/amap_maps_flutter";
     private final Context context;
@@ -65,8 +68,12 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
 
         aMap = mapView.getMap();
 
+        initListener();
+
 
     }
+
+
 
     @Override
     public View getView() {
@@ -171,5 +178,50 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
                 aMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
         }
+    }
+
+
+
+    /**
+     * 注册回调监听
+     */
+    private void initListener() {
+        aMap.setOnMapLoadedListener(this);
+        aMap.setOnCameraChangeListener(this);
+
+        //覆盖物
+        aMap.setOnMarkerClickListener(this);
+    }
+
+
+    @Override
+    public void onMapLoaded() {
+        if(methodChannel != null) {
+            final Map<String, Object> arguments = new HashMap<>(2);
+            methodChannel.invokeMethod("camera#onMapLoaded", arguments);
+        }
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition position) {
+        if(methodChannel != null) {
+            final Map<String, Object> arguments = new HashMap<>(2);
+            arguments.put("position", Convert.toJson(position));
+            arguments.put("isFinish", false);
+            methodChannel.invokeMethod("camera#onCameraChange", arguments);
+        }
+    }
+
+    @Override
+    public void onCameraChangeFinish(CameraPosition position) {
+        final Map<String, Object> arguments = new HashMap<>(2);
+        arguments.put("position", Convert.toJson(position));
+        arguments.put("isFinish", true);
+        methodChannel.invokeMethod("camera#onCameraChange", arguments);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return false;
     }
 }

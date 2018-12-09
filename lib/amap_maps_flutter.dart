@@ -15,3 +15,4 @@ part 'src/CameraPosition.dart';
 part 'src/LatLng.dart';
 part 'src/AMapController.dart';
 part 'src/AMap.dart';
+part 'src/Callbacks.dart';

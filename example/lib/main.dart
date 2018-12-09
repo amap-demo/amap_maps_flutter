@@ -82,5 +82,21 @@ class _MyHomePageState extends State<MyHomePage> {
   void onMapCreated(AMapController controller) {
     print("onMapCreated");
     mapController = controller;
+
+    // 注册监听
+    mapController.onMapLoaded.add(onMapLoaded);
+    mapController.onCameraChanged.add(onCameraChanged);
   }
+
+
+  void onMapLoaded(argument) {
+    print("onMapLoaded");
+  }
+
+  void onCameraChanged(CameraPosition cameraPostion) {
+    print("onCameraChanged " + onCameraChanged.toString());
+  }
+
+
+
 }
