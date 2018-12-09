@@ -1,9 +1,14 @@
 # Built application files
 *.apk
 *.ap_
+.DS_Store
+.dart_tool/
 
 # Files for the ART/Dalvik VM
 *.dex
+.packages
+.pub/
+pubspec.lock
 
 # Java class files
 *.class
@@ -63,3 +68,5 @@ fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
+
+.idea/
