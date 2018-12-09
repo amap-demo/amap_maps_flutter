@@ -63,6 +63,16 @@ class _MyHomePageState extends State<MyHomePage> {
               },),
             _isAnimationButton(),
           ],),
+          Row(children: <Widget>[
+            FlatButton(
+              child: Text("添加Marker"),
+              onPressed: () {
+                if (mapController != null) {
+                  MarkerOptions options = MarkerOptions.defaultOptions;
+                  mapController.addMarker(options);
+                }
+              },),
+          ],),
 
         ]));
   }

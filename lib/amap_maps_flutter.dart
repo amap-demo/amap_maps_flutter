@@ -16,3 +16,5 @@ part 'src/LatLng.dart';
 part 'src/AMapController.dart';
 part 'src/AMap.dart';
 part 'src/Callbacks.dart';
+part 'src/Marker.dart';
+part 'src/BitmapDescriptor.dart';

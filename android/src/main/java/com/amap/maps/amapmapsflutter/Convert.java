@@ -13,6 +13,8 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.LatLngBounds;
+import com.amap.api.maps.model.MarkerOptions;
+
 import io.flutter.view.FlutterMain;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -162,6 +164,55 @@ class Convert {
 
   private static String toString(Object o) {
     return (String) o;
+  }
+
+
+  /**
+   * 根据flutter传递的数据生成markeroptions
+   * @param o
+   * @return
+   */
+  static MarkerOptions toMarkerOptions(Object o) {
+    MarkerOptions options = new MarkerOptions();
+    final Map<?, ?> data = toMap(o);
+    final Object alpha = data.get("alpha");
+    if (alpha != null) {
+      options.alpha(toFloat(alpha));
+    }
+    final Object anchorU = data.get("anchorU");
+    final Object anchorV = data.get("anchorV");
+    if (anchorU != null && anchorV != null) {
+      options.anchor(toFloat(anchorU), toFloat(anchorV));
+    }
+    final Object draggable = data.get("draggable");
+    if (draggable != null) {
+      options.draggable(toBoolean(draggable));
+    }
+    final Object flat = data.get("flat");
+    if (flat != null) {
+      options.setFlat(toBoolean(flat));
+    }
+    final Object icon = data.get("icon");
+    if (icon != null) {
+      options.icon(toBitmapDescriptor(icon));
+    }
+    final Object position = data.get("position");
+    if (position != null) {
+      options.position(toLatLng(position));
+    }
+    final Object rotation = data.get("rotation");
+    if (rotation != null) {
+      options.rotateAngle(toFloat(rotation));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      options.visible(toBoolean(visible));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      options.zIndex(toFloat(zIndex));
+    }
+    return options;
   }
 
 

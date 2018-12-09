@@ -4,18 +4,16 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
-import com.amap.api.maps.TextureMapView;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +34,12 @@ import io.flutter.plugin.platform.PlatformView;
 public class AMapController implements Application.ActivityLifecycleCallbacks, PlatformView, MethodChannel.MethodCallHandler, AMap.OnMapLoadedListener, AMap.OnCameraChangeListener, AMap.OnMarkerClickListener {
 
     public static final String CHANNEL = "plugins.flutter.maps.amap.com/amap_maps_flutter";
+    public static final String METHOD_NAME_CALLBACK_AMAP_ON_MAP_LOADED = "amap#onMapLoaded";
+    public static final String METHOD_NAME_CALLBACK_AMAP_ON_CAMERA_CHANGE = "amap#onCameraChange";
+    public static final String MEHTOD_NAME_AMAP_CHANGE_CAMERA = "amap#changeCamera";
+    public static final String MEHTOD_NAME_AMAP_ADD_MARKER = "amap#addMarker";
+
+
     private final Context context;
     private final AtomicInteger activityState;
     private final PluginRegistry.Registrar registrar;
@@ -146,11 +150,16 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
         mapView.onDestroy();
     }
 
+    /**
+     * 方法会从flutter中调用
+     * @param methodCall
+     * @param result
+     */
     @Override
     public void onMethodCall(MethodCall methodCall, MethodChannel.Result result) {
 
         switch (methodCall.method) {
-            case "changeCamera":
+            case MEHTOD_NAME_AMAP_CHANGE_CAMERA:
 //                setText(methodCall, result);
 
                 List<Object> arguments = (List<Object>) methodCall.arguments;
@@ -158,10 +167,16 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
                 boolean isAnimate = (boolean) arguments.get(1);
 
 
-                android.util.Log.e("zxy","onMethodCall " + cameraPosition + " " + isAnimate);
                 changeCamera(cameraPosition, isAnimate);
 
                 result.success(null);
+                break;
+            case MEHTOD_NAME_AMAP_ADD_MARKER:
+
+                MarkerOptions markerOptions = Convert.toMarkerOptions(methodCall.argument("options"));
+                Marker marker = aMap.addMarker(markerOptions);
+                // 将marker唯一标识传递回去
+                result.success(marker.getId());
                 break;
             default:
                 result.notImplemented();
@@ -198,7 +213,7 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
     public void onMapLoaded() {
         if(methodChannel != null) {
             final Map<String, Object> arguments = new HashMap<>(2);
-            methodChannel.invokeMethod("camera#onMapLoaded", arguments);
+            methodChannel.invokeMethod(METHOD_NAME_CALLBACK_AMAP_ON_MAP_LOADED, arguments);
         }
     }
 
@@ -208,7 +223,7 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
             final Map<String, Object> arguments = new HashMap<>(2);
             arguments.put("position", Convert.toJson(position));
             arguments.put("isFinish", false);
-            methodChannel.invokeMethod("camera#onCameraChange", arguments);
+            methodChannel.invokeMethod(METHOD_NAME_CALLBACK_AMAP_ON_CAMERA_CHANGE, arguments);
         }
     }
 
@@ -217,7 +232,7 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
         final Map<String, Object> arguments = new HashMap<>(2);
         arguments.put("position", Convert.toJson(position));
         arguments.put("isFinish", true);
-        methodChannel.invokeMethod("camera#onCameraChange", arguments);
+        methodChannel.invokeMethod(METHOD_NAME_CALLBACK_AMAP_ON_CAMERA_CHANGE, arguments);
     }
 
     @Override
