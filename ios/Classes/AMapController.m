@@ -9,6 +9,17 @@
 #import "AMapController.h"
 #import <MAMapKit/MAMapKit.h>
 #import <AMapFoundationKit/AMapFoundationKit.h>
+#import "Constants.h"
+
+
+
+static bool toBool(id json);
+static int toInt(id json);
+static double toDouble(id json);
+static float toFloat(id json);
+static double toDouble(id json);
+static CLLocationCoordinate2D toLocation(id json);
+static MAMapStatus* toMapStatus(id json);
 
 
 @implementation AMapController {
@@ -23,7 +34,7 @@
     if ([super init]) {
     
         NSString* channelName =
-        [NSString stringWithFormat:@"plugins.flutter.maps.amap.com/amap_maps_flutter%lld", viewId];
+        [NSString stringWithFormat:@"%@%lld", CHANNEL,viewId];
         _channel = [FlutterMethodChannel methodChannelWithName:channelName
                                                binaryMessenger:registrar.messenger];
         __weak __typeof__(self) weakSelf = self;
@@ -39,12 +50,66 @@
 }
 
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-    NSLog(@"AMapController onMethodCall " , call.method);
+//    NSLog(@"AMapController onMethodCall %s" , call.method);
+    
+    if ([call.method isEqualToString:MEHTOD_NAME_AMAP_CHANGE_CAMERA]) {
+        MAMapStatus* mapStauts = toMapStatus(call.arguments[0]);
+        BOOL isAnimate = toBool(call.arguments[1]);
+        [self changeCamera:mapStauts :isAnimate];
+        result(nil);
+    } else {
+        result(FlutterMethodNotImplemented);
+    }
+    
 }
 
 -(UIView *)view {
     return _mapView;
 }
 
+//// 操作地图的方法
+
+-(void) changeCamera:(MAMapStatus *) cameraPosition: (BOOL)isAnimate {
+    if(cameraPosition != nil) {
+        [_mapView setMapStatus:cameraPosition animated:isAnimate];
+    }
+}
+
 @end
 
+
+
+static bool toBool(id json) {
+    NSNumber* data = json;
+    return data.boolValue;
+}
+
+static int toInt(id json) {
+    NSNumber* data = json;
+    return data.intValue;
+}
+
+static double toDouble(id json) {
+    NSNumber* data = json;
+    return data.doubleValue;
+}
+
+static float toFloat(id json) {
+    NSNumber* data = json;
+    return data.floatValue;
+}
+
+static CLLocationCoordinate2D toLocation(id json) {
+    NSArray* data = json;
+    return CLLocationCoordinate2DMake(toDouble(data[0]), toDouble(data[1]));
+}
+
+static CGPoint toPoint(id json) {
+    NSArray* data = json;
+    return CGPointMake(toDouble(data[0]), toDouble(data[1]));
+}
+
+static MAMapStatus* toMapStatus(id json) {
+    NSDictionary* data = json;
+    return [MAMapStatus statusWithCenterCoordinate:toLocation(data[@"target"]) zoomLevel:toFloat(data[@"zoom"]) rotationDegree:toFloat(data[@"bearing"]) cameraDegree:toFloat(data[@"tilt"]) screenAnchor:CGPointMake(0.5,0.5)];
+}
