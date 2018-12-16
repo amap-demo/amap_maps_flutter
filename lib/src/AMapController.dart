@@ -1,6 +1,6 @@
 part of amap_maps_flutter;
 
-class AMapController {
+class AMapController extends ChangeNotifier{
 
   static const String CHANNEL = "plugins.flutter.maps.amap.com/amap_maps_flutter";
 
@@ -8,6 +8,7 @@ class AMapController {
   static const String METHOD_NAME_CALLBACK_AMAP_ON_CAMERA_CHANGE = "amap#onCameraChange";
   static const String MEHTOD_NAME_AMAP_CHANGE_CAMERA = "amap#changeCamera";
   static const String MEHTOD_NAME_AMAP_ADD_MARKER = "amap#addMarker";
+  static const String MEHTOD_NAME_AMAP_UPDATE_MARKER = "amap#updateMarker";
 
   final int _id;
 
@@ -66,6 +67,7 @@ class AMapController {
 
   /// 覆盖物添加
   Future<Marker> addMarker(MarkerOptions options) async {
+
     final MarkerOptions effectiveOptions =
     MarkerOptions.defaultOptions.copyWith(options);
     final String markerId = await _channel.invokeMethod(
@@ -76,8 +78,25 @@ class AMapController {
     );
     final Marker marker = Marker(markerId, effectiveOptions);
     _markers[markerId] = marker;
-//    notifyListeners();
+    notifyListeners();
+
     return marker;
+  }
+
+  ///
+  /// 更新Marker内容 转换成内容，各平台再根据id去更新
+  ///
+  Future<void> updateMarker(Marker marker, MarkerOptions changes) async {
+    assert(marker != null);
+    assert(_markers[marker._id] == marker);
+    assert(changes != null);
+    await _channel.invokeMethod(MEHTOD_NAME_AMAP_UPDATE_MARKER, <String, dynamic>{
+      'marker': marker._id,
+      'options': changes._toJson(),
+    });
+    marker._options = marker._options.copyWith(changes);
+
+    notifyListeners();
   }
 
 

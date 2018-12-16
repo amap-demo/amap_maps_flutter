@@ -38,7 +38,7 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
     public static final String METHOD_NAME_CALLBACK_AMAP_ON_CAMERA_CHANGE = "amap#onCameraChange";
     public static final String MEHTOD_NAME_AMAP_CHANGE_CAMERA = "amap#changeCamera";
     public static final String MEHTOD_NAME_AMAP_ADD_MARKER = "amap#addMarker";
-
+    public static final String MEHTOD_NAME_AMAP_UPDATE_MARKER = "amap#updateMarker";
 
     private final Context context;
     private final AtomicInteger activityState;
@@ -51,6 +51,9 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
     private boolean disposed = false;
 
     private final int registrarActivityHashCode;
+
+
+    private final Map<String, Marker> markers;
 
     AMapController(int id, Context context,
                    AtomicInteger activityState,
@@ -71,6 +74,8 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
         mapView.onCreate(null);
 
         aMap = mapView.getMap();
+
+        this.markers = new HashMap<String, Marker>();
 
         initListener();
 
@@ -158,6 +163,9 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
     @Override
     public void onMethodCall(MethodCall methodCall, MethodChannel.Result result) {
 
+        Marker marker = null;
+        MarkerOptions markerOptions = null;
+
         switch (methodCall.method) {
             case MEHTOD_NAME_AMAP_CHANGE_CAMERA:
 //                setText(methodCall, result);
@@ -173,10 +181,24 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
                 break;
             case MEHTOD_NAME_AMAP_ADD_MARKER:
 
-                MarkerOptions markerOptions = Convert.toMarkerOptions(methodCall.argument("options"));
-                Marker marker = aMap.addMarker(markerOptions);
+                markerOptions = Convert.toMarkerOptions(methodCall.argument("options"));
+                marker = aMap.addMarker(markerOptions);
+
+                markers.put(marker.getId(), marker);
+
                 // 将marker唯一标识传递回去
                 result.success(marker.getId());
+                break;
+
+            case MEHTOD_NAME_AMAP_UPDATE_MARKER:
+                final String markerId = call.argument("marker");
+
+                marker = markers.get(markerId);
+                markerOptions = Convert.toMarkerOptions(methodCall.argument("options"));
+                marker.setMarkerOptions(markerOptions);
+
+                // 将marker唯一标识传递回去
+                result.success(null);
                 break;
             default:
                 result.notImplemented();

@@ -33,6 +33,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   AMapController mapController;
 
+  Marker currentMarker;
+
   bool _isAnimation = true;
 
   @override
@@ -45,8 +47,8 @@ class _MyHomePageState extends State<MyHomePage> {
           Center(
               child: Container(
                   padding: EdgeInsets.symmetric(vertical: 30.0),
-                  width: 200.0,
-                  height: 200.0,
+                  width: 400.0,
+                  height: 400.0,
                   child: AMap(
                     onMapCreated: onMapCreated,
                   ))),
@@ -66,6 +68,40 @@ class _MyHomePageState extends State<MyHomePage> {
           Row(children: <Widget>[
             FlatButton(
               child: Text("添加Marker"),
+              onPressed: () {
+                if (mapController != null) {
+                  MarkerOptions options = MarkerOptions.defaultOptions;
+
+                  mapController.addMarker(options).then(
+                          (marker) {
+                        setState(() {
+                          currentMarker = marker;
+                        }
+                        );
+                      }
+                  );
+                }
+              },),
+            FlatButton(
+              child: Text("修改位置"),
+              onPressed: () {
+                if (mapController != null) {
+                  if (currentMarker != null) {
+                    //fixme 如果默认值不一样如何更新
+                    MarkerOptions markerOptions = MarkerOptions(
+                        position: LatLng(
+                            currentMarker.options.position.latitude,
+                            currentMarker.options.position.longitude + 0.001));
+                    mapController.updateMarker(currentMarker, markerOptions);
+                  } else {
+                    print("currentMarker is null");
+                  }
+                }
+              },),
+          ],),
+          Row(children: <Widget>[
+            FlatButton(
+              child: Text("添加Polyline"),
               onPressed: () {
                 if (mapController != null) {
                   MarkerOptions options = MarkerOptions.defaultOptions;
@@ -106,7 +142,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void onCameraChanged(CameraPosition cameraPostion) {
     print("onCameraChanged " + onCameraChanged.toString());
   }
-
 
 
 }

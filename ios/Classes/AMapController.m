@@ -28,6 +28,9 @@ static MAMapStatus* toMapStatus(id json);
     FlutterMethodChannel* _channel;
     
     NSObject<FlutterPluginRegistrar>* _registrar;
+    
+    // 覆盖物记录
+    NSMutableDictionary* _annotations;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame viewIdentifier:(int64_t)viewId arguments:(id)args registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -45,6 +48,8 @@ static MAMapStatus* toMapStatus(id json);
         }];
         _mapView =  [[MAMapView alloc] initWithFrame:frame];
         _registrar = registrar;
+        
+        _annotations =[[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -56,6 +61,31 @@ static MAMapStatus* toMapStatus(id json);
         MAMapStatus* mapStauts = toMapStatus(call.arguments[0]);
         BOOL isAnimate = toBool(call.arguments[1]);
         [self changeCamera:mapStauts :isAnimate];
+        result(nil);
+    } else if ([call.method isEqualToString:MEHTOD_NAME_AMAP_ADD_MARKER]) {
+        NSDictionary* options = call.arguments[@"options"];
+        MAPointAnnotation *pointAnnotation = [[MAPointAnnotation alloc] init];
+        pointAnnotation.coordinate = toLocation(options[@"position"]);
+        
+        [_mapView addAnnotation:pointAnnotation];
+        
+        NSString* markerId = @"1";
+        
+        [_annotations setObject:pointAnnotation forKey:markerId];
+        
+        result(markerId);
+    }  else if ([call.method isEqualToString:MEHTOD_NAME_AMAP_UPDATE_MARKER]) {
+        NSDictionary* options = call.arguments[@"options"];
+        NSString* markerId = call.arguments[@"marker"];
+        
+        MAPointAnnotation *pointAnnotation = _annotations[markerId];
+        if (pointAnnotation != nil) {
+            
+            [pointAnnotation setCoordinate:CLLocationCoordinate2DMake(
+             [pointAnnotation coordinate].latitude, [pointAnnotation coordinate].longitude + 0.01
+             )];
+        }
+        
         result(nil);
     } else {
         result(FlutterMethodNotImplemented);
