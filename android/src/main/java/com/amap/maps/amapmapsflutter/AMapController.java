@@ -191,7 +191,7 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
                 break;
 
             case MEHTOD_NAME_AMAP_UPDATE_MARKER:
-                final String markerId = call.argument("marker");
+                final String markerId = methodCall.argument("marker");
 
                 marker = markers.get(markerId);
                 markerOptions = Convert.toMarkerOptions(methodCall.argument("options"));
