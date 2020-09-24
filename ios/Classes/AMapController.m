@@ -11,8 +11,6 @@
 #import <AMapFoundationKit/AMapFoundationKit.h>
 #import "Constants.h"
 
-
-
 static bool toBool(id json);
 static int toInt(id json);
 static double toDouble(id json);
@@ -33,11 +31,13 @@ static MAMapStatus* toMapStatus(id json);
     NSMutableDictionary* _annotations;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame viewIdentifier:(int64_t)viewId arguments:(id)args registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+- (instancetype)initWithFrame:(CGRect)frame
+               viewIdentifier:(int64_t)viewId
+                    arguments:(id)args
+                    registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
     if ([super init]) {
-    
-        NSString* channelName =
-        [NSString stringWithFormat:@"%@%lld", CHANNEL,viewId];
+        
+        NSString* channelName = [NSString stringWithFormat:@"%@%lld", CHANNEL,viewId];
         _channel = [FlutterMethodChannel methodChannelWithName:channelName
                                                binaryMessenger:registrar.messenger];
         __weak __typeof__(self) weakSelf = self;
@@ -60,7 +60,7 @@ static MAMapStatus* toMapStatus(id json);
     if ([call.method isEqualToString:MEHTOD_NAME_AMAP_CHANGE_CAMERA]) {
         MAMapStatus* mapStauts = toMapStatus(call.arguments[0]);
         BOOL isAnimate = toBool(call.arguments[1]);
-        [self changeCamera:mapStauts :isAnimate];
+        [self changeCamera:mapStauts animated:isAnimate];
         result(nil);
     } else if ([call.method isEqualToString:MEHTOD_NAME_AMAP_ADD_MARKER]) {
         NSDictionary* options = call.arguments[@"options"];
@@ -99,7 +99,7 @@ static MAMapStatus* toMapStatus(id json);
 
 //// 操作地图的方法
 
--(void) changeCamera:(MAMapStatus *) cameraPosition: (BOOL)isAnimate {
+- (void)changeCamera:(MAMapStatus *)cameraPosition animated: (BOOL)isAnimate {
     if(cameraPosition != nil) {
         [_mapView setMapStatus:cameraPosition animated:isAnimate];
     }
