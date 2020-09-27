@@ -57,12 +57,12 @@ static MAMapStatus* toMapStatus(id json);
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
 //    NSLog(@"AMapController onMethodCall %s" , call.method);
     
-    if ([call.method isEqualToString:MEHTOD_NAME_AMAP_CHANGE_CAMERA]) {
+    if ([call.method isEqualToString:METHOD_NAME_AMAP_CHANGE_CAMERA]) {
         MAMapStatus* mapStauts = toMapStatus(call.arguments[0]);
         BOOL isAnimate = toBool(call.arguments[1]);
         [self changeCamera:mapStauts animated:isAnimate];
         result(nil);
-    } else if ([call.method isEqualToString:MEHTOD_NAME_AMAP_ADD_MARKER]) {
+    } else if ([call.method isEqualToString:METHOD_NAME_AMAP_ADD_MARKER]) {
         NSDictionary* options = call.arguments[@"options"];
         MAPointAnnotation *pointAnnotation = [[MAPointAnnotation alloc] init];
         pointAnnotation.coordinate = toLocation(options[@"position"]);
@@ -74,7 +74,7 @@ static MAMapStatus* toMapStatus(id json);
         [_annotations setObject:pointAnnotation forKey:markerId];
         
         result(markerId);
-    }  else if ([call.method isEqualToString:MEHTOD_NAME_AMAP_UPDATE_MARKER]) {
+    }  else if ([call.method isEqualToString:METHOD_NAME_AMAP_UPDATE_MARKER]) {
         NSDictionary* options = call.arguments[@"options"];
         NSString* markerId = call.arguments[@"marker"];
         
@@ -86,6 +86,14 @@ static MAMapStatus* toMapStatus(id json);
              )];
         }
         
+        result(nil);
+    } else if ([call.method isEqualToString:METHOD_NAME_AMAP_SHOW_USER_LOCATION]) {
+        BOOL showUserLocation = toBool(call.arguments);
+        if (_mapView.showsUserLocation == showUserLocation) {
+            NSLog(@"mapView的showsUserLocation的值已经是：%d",showUserLocation);
+        } else {
+            _mapView.showsUserLocation = showUserLocation;
+        }
         result(nil);
     } else {
         result(FlutterMethodNotImplemented);

@@ -9,6 +9,8 @@
 extern NSString * const CHANNEL;
 extern NSString * const METHOD_NAME_CALLBACK_AMAP_ON_MAP_LOADED;
 extern NSString * const METHOD_NAME_CALLBACK_AMAP_ON_CAMERA_CHANGE;
-extern NSString * const MEHTOD_NAME_AMAP_CHANGE_CAMERA;
-extern NSString * const MEHTOD_NAME_AMAP_ADD_MARKER;
-extern NSString * const MEHTOD_NAME_AMAP_UPDATE_MARKER;
+extern NSString * const METHOD_NAME_AMAP_CHANGE_CAMERA;
+extern NSString * const METHOD_NAME_AMAP_ADD_MARKER;
+extern NSString * const METHOD_NAME_AMAP_UPDATE_MARKER;
+extern NSString * const METHOD_NAME_AMAP_SHOW_USER_LOCATION;
+
