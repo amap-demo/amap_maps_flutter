@@ -39,6 +39,7 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
     public static final String MEHTOD_NAME_AMAP_CHANGE_CAMERA = "amap#changeCamera";
     public static final String MEHTOD_NAME_AMAP_ADD_MARKER = "amap#addMarker";
     public static final String MEHTOD_NAME_AMAP_UPDATE_MARKER = "amap#updateMarker";
+    public static final String METHOD_NAME_AMAP_SHOW_USER_LOCATION = "amap#showUserLocation";
 
     private final Context context;
     private final AtomicInteger activityState;
@@ -198,6 +199,15 @@ public class AMapController implements Application.ActivityLifecycleCallbacks, P
                 marker.setMarkerOptions(markerOptions);
 
                 // 将marker唯一标识传递回去
+                result.success(null);
+                break;
+            case METHOD_NAME_AMAP_SHOW_USER_LOCATION:
+                boolean showUserLocation = (boolean)methodCall.arguments;
+                if (showUserLocation == aMap.isMyLocationEnabled()) {
+                    // log.i("地图MyLocationEnable的值已经是:%d",showUserLocation);
+                } else {
+                    aMap.setMyLocationEnabled(showUserLocation);
+                }
                 result.success(null);
                 break;
             default:
